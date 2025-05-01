@@ -285,10 +285,9 @@
         `חשוב להדגיש כי במערך העבודה שלנו, על אף שאנחנו מקפידים על הפרדת רכיבים, כל המשקאות מוכנים על אותו פס, ולכן עלולים להיות שאריות של אלרגנים שונים, לרבות חלב ומוצריו. לצערנו, לא ניתן להבטיח סטריליות מוחלטת מאלרגנים בסניפים שלנו. כפי שמצוין בתפריט שלנו ובאפליקציה, אנו ממליצים ללקוחות עם רגישויות או אלרגיות לבדוק מראש את רשימת המרכיבים וליידע את הצוות בסניף כדי שנוכל לסייע בצורה מיטבית 🙏`
       ]         };
 
-        const imagesData = [
-            // כאן תוסיף תמונות לדוגמה
-            { url: 'https://github.com/avsy120/rebar_comments/blob/main/images/%D7%AA%D7%9E%D7%95%D7%A0%D7%94%20%D7%A9%D7%9C%20WhatsApp%E2%80%8F%202025-05-01%20%D7%91%D7%A9%D7%A2%D7%94%2019.35.27_ebc279c9.jpg', name: 'תמונה 1' },
-            { url: 'https://via.placeholder.com/200', name: 'תמונה 2' }
+         const imagesData = [
+            { url: 'https://via.placeholder.com/300x200.png?text=Example+1', name: 'תמונה לדוגמה 1' },
+            { url: 'https://via.placeholder.com/300x200.png?text=Example+2', name: 'תמונה לדוגמה 2' }
         ];
 
         const categoryContainer = document.getElementById('categoryContainer');
@@ -304,8 +303,6 @@
                 div.textContent = cat;
                 categoryContainer.appendChild(div);
             });
-
-            // קטגוריה חדשה לתמונות בלבד
             const imgCat = document.createElement('div');
             imgCat.className = 'category';
             imgCat.setAttribute('data-category', 'images');
@@ -350,25 +347,37 @@
             imagesContainer.innerHTML = '';
             imagesData.forEach(img => {
                 const imgDiv = document.createElement('div');
-                imgDiv.style.textAlign = 'center';
+                imgDiv.className = 'img-box';
                 imgDiv.innerHTML = `
-                    <img src="${img.url}" alt="${img.name}" style="max-width: 200px; border: 1px solid #ccc; border-radius: 8px;">
-                    <br>
+                    <img src="${img.url}" alt="${img.name}">
+                    <div>${img.name}</div>
                     <button class="copy-img-btn" data-url="${img.url}">העתק תמונה</button>
                 `;
                 imagesContainer.appendChild(imgDiv);
             });
         }
 
-        function filterResponses(category) {
-            document.querySelectorAll('.response').forEach(resp => {
-                if (category === 'all' || resp.getAttribute('data-category') === category) {
-                    resp.style.display = 'flex';
-                } else {
-                    resp.style.display = 'none';
-                }
-            });
-        }
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('copy-img-btn')) {
+                const imgUrl = e.target.getAttribute('data-url');
+                fetch(imgUrl)
+                    .then(res => res.blob())
+                    .then(blob => {
+                        const item = new ClipboardItem({ [blob.type]: blob });
+                        return navigator.clipboard.write([item]);
+                    })
+                    .then(() => {
+                        e.target.textContent = '📸 הועתקה';
+                        setTimeout(() => {
+                            e.target.textContent = 'העתק תמונה';
+                        }, 1200);
+                    })
+                    .catch(err => {
+                        console.error('Copy failed', err);
+                        alert('⚠️ שגיאה בהעתקת התמונה');
+                    });
+            }
+        });
 
         document.getElementById('searchInput').addEventListener('input', function() {
             const query = this.value.trim();
@@ -390,41 +399,6 @@
             });
         });
 
-        document.addEventListener('click', (e) => {
-            if (e.target.classList.contains('copy-btn')) {
-                const btn = e.target;
-                const text = btn.previousElementSibling.textContent.trim();
-                navigator.clipboard.writeText(text).then(() => {
-                    btn.classList.add('copied');
-                    btn.textContent = 'הועתק';
-                    setTimeout(() => {
-                        btn.classList.remove('copied');
-                        btn.textContent = 'העתק';
-                    }, 1000);
-                });
-            }
-
-            if (e.target.classList.contains('copy-img-btn')) {
-                const imgUrl = e.target.getAttribute('data-url');
-                fetch(imgUrl)
-                    .then(res => res.blob())
-                    .then(blob => {
-                        const item = new ClipboardItem({ [blob.type]: blob });
-                        navigator.clipboard.write([item]);
-                        e.target.textContent = '📸 הועתקה';
-                        setTimeout(() => {
-                            e.target.textContent = 'העתק תמונה';
-                        }, 1200);
-                    })
-                    .catch(err => alert('שגיאה בהעתקת התמונה'));
-            }
-        });
-
-        document.getElementById('darkModeSwitch').addEventListener('change', (e) => {
-            document.body.classList.toggle('dark-mode', e.target.checked);
-            document.getElementById('darkModeStatus').textContent = e.target.checked ? 'מצב כהה: פעיל' : 'מצב כהה: כבוי';
-        });
-
         document.addEventListener('DOMContentLoaded', () => {
             renderCategories();
             renderResponses();
@@ -433,3 +407,4 @@
 
 </body>
 </html>
+
