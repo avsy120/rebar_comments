@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
@@ -6,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>מערכת שירות לקוחות</title>
     <style>
-   body {	
+        body {
             font-family: 'Heebo', Arial, sans-serif;
             background: #f9fbfc;
             margin: 0;
@@ -18,57 +17,10 @@
             background: #2e2e30;
             color: #e5e5e5;
         }
-        .header {
-            text-align: center;
-            margin-bottom: 20px;
+        .categories, .search-container, #responses, #images {
+            max-width: 900px;
+            margin: 0 auto;
         }
-        .dark-mode-toggle {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-        .switch {
-            position: relative;
-            display: inline-block;
-            width: 50px;
-            height: 24px;
-        }
-        .switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #ccc;
-            transition: 0.4s;
-            border-radius: 24px;
-        }
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 18px;
-            width: 18px;
-            left: 3px;
-            bottom: 3px;
-            background-color: white;
-            transition: 0.4s;
-            border-radius: 50%;
-        }
-        input:checked + .slider {
-            background-color: #4caf50;
-        }
-        input:checked + .slider:before {
-            transform: translateX(26px);
-        }
-
         .categories {
             display: flex;
             flex-wrap: wrap;
@@ -76,7 +28,6 @@
             gap: 10px;
             margin-bottom: 25px;
         }
-
         .category {
             display: inline-flex;
             align-items: center;
@@ -92,14 +43,12 @@
             transition: all 0.3s ease;
             white-space: nowrap;
         }
-
         .category:hover:not(.active) {
             background: #e6f0ff;
             color: #004a99;
             border-color: #004a99;
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
         }
-
         .category.active {
             background: #004a99;
             color: #fff;
@@ -107,79 +56,27 @@
             font-weight: 700;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
         }
-
-        body.dark-mode .category {
-            background: #3c3c3f;
-            border-color: #666;
-            color: #ccc;
-        }
-
-        body.dark-mode .category.active {
-            background: #4a90e2;
-            border-color: #4a90e2;
-            color: #fff;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-        }
-
-        .search-container {
-            display: flex;
+        #images {
+            display: none;
+            flex-wrap: wrap;
             justify-content: center;
-            margin-bottom: 25px;
-        }
-        .search-box {
-            width: 100%;
-            max-width: 500px;
-            padding: 10px 18px;
-            border-radius: 20px;
-            border: 1px solid #ccc;
-            font-size: 15px;
-            transition: border 0.3s ease, box-shadow 0.3s ease;
-        }
-        .search-box:focus {
-            border-color: #004a99;
-            box-shadow: 0 2px 8px rgba(0, 74, 153, 0.2);
-            outline: none;
-        }
-        #responses {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
             gap: 20px;
+            margin-top: 30px;
         }
-        .response {
-            background: #fff;
-            border: 1px solid #ddd;
+        .img-box {
+            text-align: center;
+            border: 1px solid #ccc;
+            padding: 10px;
             border-radius: 8px;
-            max-width: 700px;
-            width: 100%;
-            padding: 16px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 15px;
+            width: 200px;
+            background: #fff;
         }
-        .response:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+        .img-box img {
+            max-width: 100%;
+            border-radius: 4px;
         }
-        body.dark-mode .response {
-            background: #3c3c3f;
-            border-color: #555;
-        }
-        .highlight {
-            background-color: #ffeb3b;
-            padding: 2px 4px;
-            border-radius: 3px;
-            font-weight: bold;
-            color: #000;
-        }
-        body.dark-mode .highlight {
-            background-color: #ffee58;
-            color: #000;
-        }
-        .copy-btn {
+        .copy-img-btn {
+            margin-top: 8px;
             background: #004a99;
             color: #fff;
             border: none;
@@ -187,18 +84,12 @@
             padding: 6px 12px;
             cursor: pointer;
             transition: all 0.3s ease;
-            flex-shrink: 0;
             font-size: 14px;
         }
-        .copy-btn:hover {
+        .copy-img-btn:hover {
             background: #003876;
             transform: scale(1.05);
         }
-        .copy-btn.copied {
-            background: #4caf50 !important;
-            color: white !important;
-        }
-
     </style>
 </head>
 <body>
@@ -207,29 +98,14 @@
         <h1>מערכת שירות לקוחות</h1>
     </div>
 
-    <div class="dark-mode-toggle">
-        <span id="darkModeStatus" class="status-text">מצב כהה: כבוי</span>
-        <label class="switch">
-            <input type="checkbox" id="darkModeSwitch">
-            <span class="slider"></span>
-        </label>
-    </div>
-
-    <div class="categories" id="categoryContainer">
-        <!-- כאן תכניס קטגוריות -->
-    </div>
+    <div class="categories" id="categoryContainer"></div>
 
     <div class="search-container">
         <input type="text" id="searchInput" class="search-box" placeholder="חפש תגובה...">
     </div>
 
-    <div id="responses">
-        <!-- כאן תכניס תגובות -->
-    </div>
-
-    <div id="images" style="display: none; flex-wrap: wrap; justify-content: center; gap: 20px; margin-top: 30px;">
-        <!-- כאן תכניס תמונות -->
-    </div>
+    <div id="responses"></div>
+    <div id="images"></div>
 
     <script>
         const data = {
@@ -285,9 +161,11 @@
         `חשוב להדגיש כי במערך העבודה שלנו, על אף שאנחנו מקפידים על הפרדת רכיבים, כל המשקאות מוכנים על אותו פס, ולכן עלולים להיות שאריות של אלרגנים שונים, לרבות חלב ומוצריו. לצערנו, לא ניתן להבטיח סטריליות מוחלטת מאלרגנים בסניפים שלנו. כפי שמצוין בתפריט שלנו ובאפליקציה, אנו ממליצים ללקוחות עם רגישויות או אלרגיות לבדוק מראש את רשימת המרכיבים וליידע את הצוות בסניף כדי שנוכל לסייע בצורה מיטבית 🙏`
       ]         };
 
-         const imagesData = [
-            { url: 'https://github.com/avsy120/rebar_comments/blob/8417d9d8ba5a9e04b25986570a9128252c6ccf25/images/%D7%AA%D7%9E%D7%95%D7%A0%D7%94%20%D7%A9%D7%9C%20WhatsApp%E2%80%8F%202025-05-01%20%D7%91%D7%A9%D7%A2%D7%94%2019.35.27_ebc279c9.jpg', name: 'תמונה לדוגמה 1' },
-            { url: 'https://via.placeholder.com/300x200.png?text=Example+2', name: 'תמונה לדוגמה 2' }
+        const imagesData = [
+            {
+                url: 'https://raw.githubusercontent.com/avsy120/rebar_comments/8417d9d8ba5a9e04b25986570a9128252c6ccf25/images/%D7%AA%D7%9E%D7%95%D7%A0%D7%94%20%D7%A9%D7%9C%20WhatsApp%E2%80%8F%202025-05-01%20%D7%91%D7%A9%D7%A2%D7%94%2019.35.27_ebc279c9.jpg',
+                name: 'תמונה מ-WhatsApp'
+            }
         ];
 
         const categoryContainer = document.getElementById('categoryContainer');
@@ -334,10 +212,7 @@
                     const responseDiv = document.createElement('div');
                     responseDiv.className = 'response';
                     responseDiv.setAttribute('data-category', category);
-                    responseDiv.innerHTML = `
-                        <div class="response-text">${msg.replace(/\n/g, '<br>')}</div>
-                        <button class="copy-btn">העתק</button>
-                    `;
+                    responseDiv.innerHTML = `<div>${msg.replace(/\n/g, '<br>')}</div>`;
                     responsesContainer.appendChild(responseDiv);
                 });
             });
@@ -354,6 +229,17 @@
                     <button class="copy-img-btn" data-url="${img.url}">העתק תמונה</button>
                 `;
                 imagesContainer.appendChild(imgDiv);
+            });
+        }
+
+        function filterResponses(category) {
+            const allResponses = document.querySelectorAll('.response');
+            allResponses.forEach(resp => {
+                if (category === 'all' || resp.getAttribute('data-category') === category) {
+                    resp.style.display = 'block';
+                } else {
+                    resp.style.display = 'none';
+                }
             });
         }
 
@@ -379,26 +265,6 @@
             }
         });
 
-        document.getElementById('searchInput').addEventListener('input', function() {
-            const query = this.value.trim();
-            const regex = new RegExp(`(${query})`, 'gi');
-            document.querySelectorAll('.response').forEach(resp => {
-                const textContainer = resp.querySelector('.response-text');
-                const original = textContainer.textContent;
-                if (query === '') {
-                    textContainer.innerHTML = original;
-                    resp.style.display = 'flex';
-                    return;
-                }
-                if (original.toLowerCase().includes(query.toLowerCase())) {
-                    textContainer.innerHTML = original.replace(regex, '<span class="highlight">$1</span>');
-                    resp.style.display = 'flex';
-                } else {
-                    resp.style.display = 'none';
-                }
-            });
-        });
-
         document.addEventListener('DOMContentLoaded', () => {
             renderCategories();
             renderResponses();
@@ -407,4 +273,3 @@
 
 </body>
 </html>
-
