@@ -25,36 +25,100 @@
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            gap: 10px;
+            gap: 12px;
             margin-bottom: 25px;
         }
         .category {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            padding: 8px 16px;
-            border-radius: 20px;
+            padding: 10px 20px;
+            border-radius: 30px;
             background: #ffffff;
-            border: 1.5px solid #cccccc;
+            border: 2px solid #cccccc;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 15px;
             font-weight: 600;
             color: #333;
             transition: all 0.3s ease;
-            white-space: nowrap;
         }
         .category:hover:not(.active) {
             background: #e6f0ff;
             color: #004a99;
             border-color: #004a99;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+            transform: translateY(-2px);
         }
         .category.active {
             background: #004a99;
             color: #fff;
             border-color: #004a99;
-            font-weight: 700;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        .search-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 25px;
+        }
+        .search-box {
+            width: 100%;
+            max-width: 500px;
+            padding: 12px 20px;
+            border-radius: 25px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+            transition: border 0.3s ease, box-shadow 0.3s ease;
+        }
+        .search-box:focus {
+            border-color: #004a99;
+            box-shadow: 0 2px 8px rgba(0, 74, 153, 0.2);
+            outline: none;
+        }
+        #responses {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+        .response {
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            max-width: 700px;
+            width: 100%;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        .response:hover {
+            transform: translateY(-3px);
+        }
+        .highlight {
+            background-color: #ffeb3b;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-weight: bold;
+            color: #000;
+        }
+        .copy-btn, .copy-img-btn {
+            background: #004a99;
+            color: #fff;
+            border: none;
+            border-radius: 20px;
+            padding: 8px 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+            font-size: 14px;
+        }
+        .copy-btn:hover, .copy-img-btn:hover {
+            background: #003876;
+            transform: scale(1.05);
+        }
+        .copy-btn.copied, .copy-img-btn.copied {
+            background: #4caf50 !important;
+            color: white !important;
         }
         #images {
             display: none;
@@ -65,30 +129,16 @@
         }
         .img-box {
             text-align: center;
-            border: 1px solid #ccc;
+            border: 1px solid #ddd;
             padding: 10px;
-            border-radius: 8px;
+            border-radius: 10px;
             width: 200px;
             background: #fff;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.1);
         }
         .img-box img {
             max-width: 100%;
-            border-radius: 4px;
-        }
-        .copy-img-btn {
-            margin-top: 8px;
-            background: #004a99;
-            color: #fff;
-            border: none;
-            border-radius: 16px;
-            padding: 6px 12px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 14px;
-        }
-        .copy-img-btn:hover {
-            background: #003876;
-            transform: scale(1.05);
+            border-radius: 6px;
         }
     </style>
 </head>
@@ -166,6 +216,7 @@
                 url: 'https://raw.githubusercontent.com/avsy120/rebar_comments/8417d9d8ba5a9e04b25986570a9128252c6ccf25/images/%D7%AA%D7%9E%D7%95%D7%A0%D7%94%20%D7%A9%D7%9C%20WhatsApp%E2%80%8F%202025-05-01%20%D7%91%D7%A9%D7%A2%D7%94%2019.35.27_ebc279c9.jpg',
                 name: 'תמונה מ-WhatsApp'
             }
+            // אפשר להוסיף עוד תמונות כאן בצורה דומה
         ];
 
         const categoryContainer = document.getElementById('categoryContainer');
@@ -212,7 +263,10 @@
                     const responseDiv = document.createElement('div');
                     responseDiv.className = 'response';
                     responseDiv.setAttribute('data-category', category);
-                    responseDiv.innerHTML = `<div>${msg.replace(/\n/g, '<br>')}</div>`;
+                    responseDiv.innerHTML = `
+                        <div class="response-text">${msg.replace(/\n/g, '<br>')}</div>
+                        <button class="copy-btn">העתק</button>
+                    `;
                     responsesContainer.appendChild(responseDiv);
                 });
             });
@@ -233,17 +287,48 @@
         }
 
         function filterResponses(category) {
-            const allResponses = document.querySelectorAll('.response');
-            allResponses.forEach(resp => {
+            document.querySelectorAll('.response').forEach(resp => {
                 if (category === 'all' || resp.getAttribute('data-category') === category) {
-                    resp.style.display = 'block';
+                    resp.style.display = 'flex';
                 } else {
                     resp.style.display = 'none';
                 }
             });
         }
 
+        document.getElementById('searchInput').addEventListener('input', function() {
+            const query = this.value.trim();
+            const regex = new RegExp(`(${query})`, 'gi');
+            document.querySelectorAll('.response').forEach(resp => {
+                const textContainer = resp.querySelector('.response-text');
+                const original = textContainer.textContent;
+                if (query === '') {
+                    textContainer.innerHTML = original;
+                    resp.style.display = 'flex';
+                    return;
+                }
+                if (original.toLowerCase().includes(query.toLowerCase())) {
+                    textContainer.innerHTML = original.replace(regex, '<span class="highlight">$1</span>');
+                    resp.style.display = 'flex';
+                } else {
+                    resp.style.display = 'none';
+                }
+            });
+        });
+
         document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('copy-btn')) {
+                const btn = e.target;
+                const text = btn.previousElementSibling.textContent.trim();
+                navigator.clipboard.writeText(text).then(() => {
+                    btn.classList.add('copied');
+                    btn.textContent = 'הועתק';
+                    setTimeout(() => {
+                        btn.classList.remove('copied');
+                        btn.textContent = 'העתק';
+                    }, 1000);
+                });
+            }
             if (e.target.classList.contains('copy-img-btn')) {
                 const imgUrl = e.target.getAttribute('data-url');
                 fetch(imgUrl)
@@ -253,14 +338,15 @@
                         return navigator.clipboard.write([item]);
                     })
                     .then(() => {
+                        e.target.classList.add('copied');
                         e.target.textContent = '📸 הועתקה';
                         setTimeout(() => {
+                            e.target.classList.remove('copied');
                             e.target.textContent = 'העתק תמונה';
                         }, 1200);
                     })
-                    .catch(err => {
-                        console.error('Copy failed', err);
-                        alert('⚠️ שגיאה בהעתקת התמונה');
+                    .catch(() => {
+                        alert('⚠️ העתקת תמונה לא נתמכת בדפדפן הזה');
                     });
             }
         });
