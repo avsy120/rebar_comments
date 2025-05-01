@@ -1,1 +1,435 @@
 
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מערכת שירות לקוחות</title>
+    <style>
+   body {	
+            font-family: 'Heebo', Arial, sans-serif;
+            background: #f9fbfc;
+            margin: 0;
+            padding: 30px 20px;
+            color: #333;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+        body.dark-mode {
+            background: #2e2e30;
+            color: #e5e5e5;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .dark-mode-toggle {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: 0.4s;
+            border-radius: 24px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider {
+            background-color: #4caf50;
+        }
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        .categories {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        .category {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 16px;
+            border-radius: 20px;
+            background: #ffffff;
+            border: 1.5px solid #cccccc;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .category:hover:not(.active) {
+            background: #e6f0ff;
+            color: #004a99;
+            border-color: #004a99;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+        }
+
+        .category.active {
+            background: #004a99;
+            color: #fff;
+            border-color: #004a99;
+            font-weight: 700;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        body.dark-mode .category {
+            background: #3c3c3f;
+            border-color: #666;
+            color: #ccc;
+        }
+
+        body.dark-mode .category.active {
+            background: #4a90e2;
+            border-color: #4a90e2;
+            color: #fff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .search-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 25px;
+        }
+        .search-box {
+            width: 100%;
+            max-width: 500px;
+            padding: 10px 18px;
+            border-radius: 20px;
+            border: 1px solid #ccc;
+            font-size: 15px;
+            transition: border 0.3s ease, box-shadow 0.3s ease;
+        }
+        .search-box:focus {
+            border-color: #004a99;
+            box-shadow: 0 2px 8px rgba(0, 74, 153, 0.2);
+            outline: none;
+        }
+        #responses {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+        .response {
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            max-width: 700px;
+            width: 100%;
+            padding: 16px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+        }
+        .response:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+        }
+        body.dark-mode .response {
+            background: #3c3c3f;
+            border-color: #555;
+        }
+        .highlight {
+            background-color: #ffeb3b;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-weight: bold;
+            color: #000;
+        }
+        body.dark-mode .highlight {
+            background-color: #ffee58;
+            color: #000;
+        }
+        .copy-btn {
+            background: #004a99;
+            color: #fff;
+            border: none;
+            border-radius: 16px;
+            padding: 6px 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+            font-size: 14px;
+        }
+        .copy-btn:hover {
+            background: #003876;
+            transform: scale(1.05);
+        }
+        .copy-btn.copied {
+            background: #4caf50 !important;
+            color: white !important;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>מערכת שירות לקוחות</h1>
+    </div>
+
+    <div class="dark-mode-toggle">
+        <span id="darkModeStatus" class="status-text">מצב כהה: כבוי</span>
+        <label class="switch">
+            <input type="checkbox" id="darkModeSwitch">
+            <span class="slider"></span>
+        </label>
+    </div>
+
+    <div class="categories" id="categoryContainer">
+        <!-- כאן תכניס קטגוריות -->
+    </div>
+
+    <div class="search-container">
+        <input type="text" id="searchInput" class="search-box" placeholder="חפש תגובה...">
+    </div>
+
+    <div id="responses">
+        <!-- כאן תכניס תגובות -->
+    </div>
+
+    <div id="images" style="display: none; flex-wrap: wrap; justify-content: center; gap: 20px; margin-top: 30px;">
+        <!-- כאן תכניס תמונות -->
+    </div>
+
+    <script>
+        const data = {
+"תלונה על משקה": [
+        `היי, מתנצלת על החוויה שלך. אני אשמח לתמונה של המשקאות על מנת שאוכל להעביר לבירור מול הסניף🙏`,
+        `כמחווה שירותית, אוכל להציע לך 50% הנחה על המשקה הבא. להבא, בכל הנוגע למשקאות יש לפנות ישירות לסניף\nתודה על ההבנה 🙏`,
+        `במידה והמשקה לא לטעמך, ניתן לפנות לברמן ולבקש תיקון – הם יבצעו זאת בשמחה, אלו נהלי הרשת.\nתודה על ההבנה 🙏`,
+        `המשקה שהוכן נזרק, ולכן אין ביכולתנו להציע החזר כספי, מאחר ובוצע שימוש ברכיבים. יחד עם זאת, כמחווה שירותית, אוכל להוסיף לך הטבה של 50% למשקה הבא שלך.\nואנו מקווים שהחוויה הבאה תהיה טובה יותר ❤️`,
+        `המשקה שהוכן נזרק, ולכן אין ביכולתנו להציע החזר כספי, מאחר ובוצע שימוש ברכיבים. יחד עם זאת, כמחווה שירותית, אוכל להוסיף לך הטבה של משקה ללא עלות למועדון שלך.\nואנו מקווים שהחוויה הבאה תהיה טובה יותר ❤️`,
+        `אנו לא נמצאים בסניפים, ולכן במידה וקיבלת משקה שלא היה לשביעות רצונך מסיבה כלשהי, ישנה אפשרות להחליף או לתקן אותו במקום. לצערנו, אין לנו אפשרות להתחקות אחר המשקה שקיבלת.\nתודה על ההבנה 🙏`
+      ],
+      "תלונה על עובד": [
+        `אני מסכימה לחלוטין עם הדברים שהעלית.\nהמשוב שלך יועבר באופן מיידי לזכיין הסניף לצורך בחינה ושיפור השירות.\nאנו מקפידים על רמת שירות גבוהה ואיכותית, וכל משוב נלקח ברצינות רבה. תודה על פנייתך, והמשוב שלך מועבר כעת לצוות המטפל 🙏`,
+        `אני מסכימה לחלוטין עם הדברים שהעלית.\nהמשוב שלך יועבר באופן מיידי לזכיין הסניף לצורך בחינה ושיפור השירות. אנו שמים דגש גדול על איכות השירות של העובדים שלנו ואני מייד מעבירה את המשוב שלך 🙏`
+      ],
+      "פיצוי/הוספת הטבה ונקודות למועדון": [
+        `נשמח אם תבחר לקבל את המחווה שהוצעה, מתוך כוונה לשמור על שביעות רצונך כלקוח. יחד עם זאת, נבקש להדגיש כי איננו יכולים להציע פיצוי נוסף מעבר לכך.\nאנו מקווים שתמשיך ליהנות מהמוצרים והשירות שלנו בעתיד 🙏`,
+        `הוספתי את ההטבה למועדון שלך – יש לרענן את האפליקציה ותוכל/י לראות אותה.\nהמשך יום טוב 💖`,
+        `הוספתי את הנקודות למועדון שלך – יש לרענן את האפליקציה ותוכל/י לראות אותן.\nהמשך יום נעים 💖`
+      ],
+      "הזמנה לסניף שגוי": [
+        `שלום,\nאין אפשרות ביטול שמזמינים באפליקציה כי ההזמנה עוברת ישירות לסניף להכנת המשקה– ומתחיל תהליך ההכנה באופן מיידי.\nבמידה ולא מתבצע איסוף, המשקה נזרק בהתאם לנהלי הרשת.\nיחד עם זאת, ניתן לגשת לסניף בו בוצעה ההזמנה (או לסניף הקרוב ביותר אליך) בזמן אמת, להציג את אישור ההזמנה – והמשקה יוכן עבורך מחדש, ללא תשלום נוסף 😊`
+      ],
+      "משלוחים/זמני המתנה בסניף": [
+        `היי, אני מצטערת לשמוע על העיכוב בקבלת המשלוח 🙏\nחשוב לנו לשתף שזמני ההגעה עשויים להשתנות בהתאם לעומסים או גורמים לוגיסטיים בשטח, ולכן לא נוכל להתחייב על זמן אספקה מדויק 🚚\n\nאנחנו לגמרי מבינים את התחושה ומעריכים מאוד את הסבלנות שלך 💛\nלצורך בדיקה, נודה אם תשלח/י לנו את השם המלא כפי שהוזן בהזמנה – ונעדכן אותך בהקדם ✨`,
+        `היי, אני מתנצלת על זמן ההמתנה הממושך 🙏\nלעיתים, במיוחד בשעות עמוסות, ייתכנו עיכובים – ואנחנו באמת עושים כל מאמץ לספק שירות מהיר ואיכותי לכל לקוח.\nתודה רבה על הסבלנות וההבנה שלך 💛`
+      ],
+      "חיובים כפולים": [
+        `המערכת מזהה באופן אוטומטי חיובים כפולים או שגויים ומבטלת אותם. עם זאת, עדכון הנתונים עשוי להימשך מספר ימים.\nבמידה והחיובים ממשיכים להופיע בפירוט העסקאות, ניתן לפנות אלינו ואנו נדאג לזיכוי בהתאם 🙏`,
+        `שלום,\nלאחר בדיקה, לא נמצא חיוב כפול. ייתכן שיידרש פרק זמן קצר עד שהחיוב יוסר באופן סופי. בשלב זה הוא חסום במערכות שלנו.\nמומלץ לעקוב אחר פירוט העסקאות, ובמידה והחיוב לא ייעלם – ניתן לפנות אלינו בשנית, ונשמח לסייע.\nתודה רבה 🙏`
+      ],
+      "ארנק דיגיטלי": [
+        `אשמח לקבל את 4 הספרות האחרונות של אמצעי התשלום ששימש לביצוע ההזמנה, על מנת שנוכל לאתר אותה במערכת.\nלתשומת לבך – במידה והתשלום בוצע באמצעות ארנק דיגיטלי כגון Google Pay או Apple Pay, ייתכן שהספרות האחרונות שונות מאלה שמופיעות על כרטיס האשראי.\nתודה רבה 🙏`,
+        `במידה והתשלום בוצע באמצעות Apple Pay, שים/י לב כי 4 הספרות האחרונות של כרטיס האשראי שונות מאלה שמופיעות ב־Apple Pay – כיוון שמדובר במספר כרטיס ווירטואלי.\n\nכדי לאתר את המספר הנכון:\n1. יש להיכנס לארנק הדיגיטלי (Wallet)\n2. ללחוץ על שלוש הנקודות שבפינה העליונה של המסך\n3. לבחור באפשרות "מספר כרטיס"\n4. שם יוצג מספר הכרטיס המשויך לארנק הדיגיטלי\n\nנשמח אם תוכל/י לשלוח לנו את 4 הספרות האחרונות – ונבצע את הבדיקה עבורך בהקדם ✨`,
+        `במידה והתשלום בוצע באמצעות Google Pay,\nכך ניתן למצוא את 4 הספרות האחרונות של אמצעי התשלום:\nפתח/י את אפליקציית Google Pay\n1. בחר/י בכרטיס הרלוונטי\n2. לחץ/י על שלוש הנקודות בפינה העליונה\n3. בחר/י ב"פרטי כרטיס" או "הצגת מספר כרטיס"\n4. יוצגו 4 הספרות האחרונות של הכרטיס הווירטואלי\n\nנשמח אם תוכל/י לשלוח לנו את 4 הספרות האחרונות – ונבצע את הבדיקה עבורך בהקדם ✨`
+      ],
+      "זיכוי": [
+        `ביצעתי עבורך את הזיכוי – תוכל/י לראות אותו בחשבון שלך בימים הקרובים.\nהמשך יום טוב 💖`,
+        `העברתי את הזיכוי – תוכל/י לראות אותו בחשבון שלך עד 14 ימי עסקים.\nהמשך יום מקסים 💖`,
+        `תודה רבה. מצאתי את העסקה שלך אך היא עדיין לא נקלטה במערכת אצלנו. מחר אבצע עבורך את הזיכוי🙏`
+      ],
+      "צבירת נקודות": [
+        `היי, בינואר שינינו את מבנה מועדון הלקוחות, וכעת ישנן דרגות חברות שונות. דרגת החברות הנוכחית שלך היא דרגת "פרש" (Fresh) שבה לא מתבצרת צבירת נקודות. לאחר שתגיעי ל-10 הזמנות בשנה (כרגע יש לך ), תעברי לדרגת חברות גבוהה יותר, בה תוכלי לצבור נקודות באופן קבוע❤️`,
+        `היי , בינואר שינינו את מבנה מועדון הלקוחות, וכעת ישנן דרגות חברות שונות. דרגת החברות הנוכחית שלך היא דרגת "פרש" (Fresh), שבה לא מתבצרת צבירת נקודות. לאחר שתגיעי ל-10 הזמנות בשנה (כרגע יש לך  ), תעבור לדרגת חברות גבוהה יותר, בה תוכל לצבור נקודות באופן קבוע❤️`
+      ],
+      "קופון חיצוני": [
+        `היי, מתנצלים על אי הנוחות 🙏\nלצערנו, אין לנו אפשרות לבדוק קופון שלא הופק דרכנו.\nיש לפנות ישירות לחברה ממנה נרכש הקופון, על מנת לבדוק את תקינותו.\nתודה על ההבנה 💛`
+      ],
+      "קוד אימות": [
+        `במידה ואינך מצליח/ה לקבל את קוד האימות, ייתכן שההודעה נחסמה.\nנשמח אם תוכל/י לבדוק בתיקיית הספאם בהודעות שלך\nכדי להקל על החיפוש, נסה/י להקליד בשורת החיפוש את המילה rebar באנגלית 🔍\n\nבהצלחה! ואם עדיין לא מתקבל – אנחנו כאן לכל שאלה 💚`
+      ],
+      "אלרגיות": [
+        `חשוב להדגיש כי במערך העבודה שלנו, על אף שאנחנו מקפידים על הפרדת רכיבים, כל המשקאות מוכנים על אותו פס, ולכן עלולים להיות שאריות של אלרגנים שונים, לרבות חלב ומוצריו. לצערנו, לא ניתן להבטיח סטריליות מוחלטת מאלרגנים בסניפים שלנו. כפי שמצוין בתפריט שלנו ובאפליקציה, אנו ממליצים ללקוחות עם רגישויות או אלרגיות לבדוק מראש את רשימת המרכיבים וליידע את הצוות בסניף כדי שנוכל לסייע בצורה מיטבית 🙏`
+      ]         };
+
+        const imagesData = [
+            // כאן תוסיף תמונות לדוגמה
+            { url: 'https://via.placeholder.com/150', name: 'תמונה 1' },
+            { url: 'https://via.placeholder.com/200', name: 'תמונה 2' }
+        ];
+
+        const categoryContainer = document.getElementById('categoryContainer');
+        const responsesContainer = document.getElementById('responses');
+        const imagesContainer = document.getElementById('images');
+
+        function renderCategories() {
+            categoryContainer.innerHTML = '<div class="category active" data-category="all">הכל</div>';
+            Object.keys(data).forEach(cat => {
+                const div = document.createElement('div');
+                div.className = 'category';
+                div.setAttribute('data-category', cat);
+                div.textContent = cat;
+                categoryContainer.appendChild(div);
+            });
+
+            // קטגוריה חדשה לתמונות בלבד
+            const imgCat = document.createElement('div');
+            imgCat.className = 'category';
+            imgCat.setAttribute('data-category', 'images');
+            imgCat.textContent = 'תמונות';
+            categoryContainer.appendChild(imgCat);
+
+            document.querySelectorAll('.category').forEach(cat => {
+                cat.addEventListener('click', () => {
+                    document.querySelectorAll('.category').forEach(c => c.classList.remove('active'));
+                    cat.classList.add('active');
+                    const selected = cat.getAttribute('data-category');
+                    if (selected === 'images') {
+                        responsesContainer.style.display = 'none';
+                        imagesContainer.style.display = 'flex';
+                        renderImages();
+                    } else {
+                        responsesContainer.style.display = 'flex';
+                        imagesContainer.style.display = 'none';
+                        filterResponses(selected);
+                    }
+                });
+            });
+        }
+
+        function renderResponses() {
+            responsesContainer.innerHTML = '';
+            Object.entries(data).forEach(([category, messages]) => {
+                messages.forEach(msg => {
+                    const responseDiv = document.createElement('div');
+                    responseDiv.className = 'response';
+                    responseDiv.setAttribute('data-category', category);
+                    responseDiv.innerHTML = `
+                        <div class="response-text">${msg.replace(/\n/g, '<br>')}</div>
+                        <button class="copy-btn">העתק</button>
+                    `;
+                    responsesContainer.appendChild(responseDiv);
+                });
+            });
+        }
+
+        function renderImages() {
+            imagesContainer.innerHTML = '';
+            imagesData.forEach(img => {
+                const imgDiv = document.createElement('div');
+                imgDiv.style.textAlign = 'center';
+                imgDiv.innerHTML = `
+                    <img src="${img.url}" alt="${img.name}" style="max-width: 200px; border: 1px solid #ccc; border-radius: 8px;">
+                    <br>
+                    <button class="copy-img-btn" data-url="${img.url}">העתק תמונה</button>
+                `;
+                imagesContainer.appendChild(imgDiv);
+            });
+        }
+
+        function filterResponses(category) {
+            document.querySelectorAll('.response').forEach(resp => {
+                if (category === 'all' || resp.getAttribute('data-category') === category) {
+                    resp.style.display = 'flex';
+                } else {
+                    resp.style.display = 'none';
+                }
+            });
+        }
+
+        document.getElementById('searchInput').addEventListener('input', function() {
+            const query = this.value.trim();
+            const regex = new RegExp(`(${query})`, 'gi');
+            document.querySelectorAll('.response').forEach(resp => {
+                const textContainer = resp.querySelector('.response-text');
+                const original = textContainer.textContent;
+                if (query === '') {
+                    textContainer.innerHTML = original;
+                    resp.style.display = 'flex';
+                    return;
+                }
+                if (original.toLowerCase().includes(query.toLowerCase())) {
+                    textContainer.innerHTML = original.replace(regex, '<span class="highlight">$1</span>');
+                    resp.style.display = 'flex';
+                } else {
+                    resp.style.display = 'none';
+                }
+            });
+        });
+
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('copy-btn')) {
+                const btn = e.target;
+                const text = btn.previousElementSibling.textContent.trim();
+                navigator.clipboard.writeText(text).then(() => {
+                    btn.classList.add('copied');
+                    btn.textContent = 'הועתק';
+                    setTimeout(() => {
+                        btn.classList.remove('copied');
+                        btn.textContent = 'העתק';
+                    }, 1000);
+                });
+            }
+
+            if (e.target.classList.contains('copy-img-btn')) {
+                const imgUrl = e.target.getAttribute('data-url');
+                fetch(imgUrl)
+                    .then(res => res.blob())
+                    .then(blob => {
+                        const item = new ClipboardItem({ [blob.type]: blob });
+                        navigator.clipboard.write([item]);
+                        e.target.textContent = '📸 הועתקה';
+                        setTimeout(() => {
+                            e.target.textContent = 'העתק תמונה';
+                        }, 1200);
+                    })
+                    .catch(err => alert('שגיאה בהעתקת התמונה'));
+            }
+        });
+
+        document.getElementById('darkModeSwitch').addEventListener('change', (e) => {
+            document.body.classList.toggle('dark-mode', e.target.checked);
+            document.getElementById('darkModeStatus').textContent = e.target.checked ? 'מצב כהה: פעיל' : 'מצב כהה: כבוי';
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderCategories();
+            renderResponses();
+        });
+    </script>
+
+</body>
+</html>
